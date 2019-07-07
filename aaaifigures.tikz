@@ -1,0 +1,42 @@
+\def\imagewidth{5cm}
+
+\newcommand{\figqualitativehouston}{
+\begin{tikzpicture}[node distance=.5em]
+
+\node[inner sep=0, label=Sentinel-2 input] (a) {\includegraphics[width=\imagewidth]{images/aaaiqualitative/input_sen.png}};
+\node[inner sep=0, right=of a, label=target (10m)] (b) {\includegraphics[width=\imagewidth]{images/aaaiqualitative/0_target_class_02_sen.png}};
+\node[inner sep=0, right=of b,label=prediction] (c) {\includegraphics[width=\imagewidth]{images/aaaiqualitative/0_prediction_class_02_sen.png}};
+
+
+\node[inner sep=0, right= of c, label=VHR input] (a2) {\includegraphics[width=\imagewidth]{images/aaaiqualitative/0_building_input.png}};
+\node[inner sep=0, right=of a2, label=target (2m)] (b2) {\includegraphics[width=\imagewidth]{images/aaaiqualitative/0_building_target_02.png}};
+\node[inner sep=0, right=of b2,label=prediction] (c2) {\includegraphics[width=\imagewidth]{images/aaaiqualitative/0_building_prediction.png}};
+
+\coordinate (break) at ($(c)!0.5!(a2)$);
+\draw[thick] ($ (break) - (0,1.6cm) $) -- ($ (break) + (0,1.6cm) $) node[at end, above=3em]{};
+
+\end{tikzpicture}
+}
+
+\newcommand{\figqualitativefusionhouston}{
+\begin{tikzpicture}[node distance=.5em]
+\node[inner sep=0, label=VHR input] (a) {\includegraphics[width=\imagewidth]{images/aaaiqualitative/118_damage_input.png}};
+\node[inner sep=0, right=of a, label=target] (b) {\includegraphics[width=\imagewidth]{images/aaaiqualitative/118_damage_target.png}};
+\node[inner sep=0, right=of b,label=fusion prediction] (c) {\includegraphics[width=\imagewidth]{images/aaaiqualitative/118_damage_preds_all.png}};
+
+
+\node[inner sep=0, right=of c, label=VHR only prediction] (d) {\includegraphics[width=\imagewidth]{images/aaaiqualitative/118_damage_preds_vhr.png}};
+\node[inner sep=0, right=of d,label=overlay] (e) {\includegraphics[width=\imagewidth]{images/aaaiqualitative/118_damage_preds_vhr_diff.png}};
+\end{tikzpicture}
+}
+
+\newcommand{\theteam}{
+\begin{tikzpicture}
+[node distance=.5em, label distance=.3em]
+\node[label={\veryverytiny Marc Ru\ss wurm}](marc){\includegraphics[height=1.52em]{images/team/marc2.jpg}};
+\node[right=of marc, label={\veryverytiny Ramona Pelich}](ramona){\includegraphics[width=2.5em]{images/team/rpelich2018.jpg}};
+\node[right=of ramona, label={\veryverytiny Ben Bischke}](ben){\includegraphics[width=2.5em]{images/team/portrait_ben.jpg}};
+\node[right=of ben, label={\veryverytiny Jakub Fil}](jakub){\includegraphics[width=2.5em]{images/team/headshotJakubFil.jpg}};
+\node[right=of jakub, label={\veryverytiny Tim G. J. Rudner}](tim){\includegraphics[width=2.61em]{images/team/Tim_portrait.jpg}};
+\end{tikzpicture}
+}

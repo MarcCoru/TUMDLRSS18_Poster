@@ -1,0 +1,256 @@
+\definecolor{gridcolor}{HTML}{284251}
+%\definecolor{focusone}{HTML}{4575b4} % IKB
+%\definecolor{focustwo}{HTML}{be3e2b} % IKB
+
+\colorlet{focusone}{tumbluedark}
+\colorlet{focustwo}{tumorange}
+
+\colorlet{activationcolor}{focusone} % IKB
+\colorlet{contextonecolor}{focustwo!40}
+\colorlet{contexttwocolor}{focustwo!60}
+\colorlet{contextthreecolor}{focustwo!80}
+\colorlet{contextfourcolor}{focustwo}
+
+\tikzstyle{perspective3d}=[z={(0.5cm,-0.5cm)}, x={(1cm,0cm)}, y={(0cm,1cm)}]
+\tikzstyle{conn}=[-stealth, semithick, rounded corners]
+\tikzstyle{revconn}=[stealth-,semithick,  rounded corners]
+\tikzstyle{shared}=[stealth-stealth, rounded corners, very thick]
+\tikzstyle{fm}=[inner sep=0]
+\tikzstyle{net}=[inner sep=.5em, draw=gridcolor, rounded corners]
+\tikzstyle{grid}=[inner sep=0]
+\tikzstyle{annotation}=[thin, tumgray, shorten >=1em] % shorten <=1em, 
+%\tikzstyle{noteannot}=[draw, rounded corners, align=left, font=\small, draw=tumbluedark, fill=none]
+\tikzstyle{noteannot}=[draw, rounded corners, align=left, font=\small, draw=white, fill=tumgraylight, text=tumbluedark]
+\def\featurescale{2}
+
+\newcommand{\mygridd}[4]{%
+        \def\scale{#1}%
+        \def\depth{#2}%
+        \def\step{#3}%
+        \def\fillcolor{#4}%
+        \begin{tikzpicture}[scale=\scale, perspective3d]
+            \draw[canvas is xy plane at z=1, fill=\fillcolor,rounded corners=0mm] (0,0) -- (0,1) -- (\depth,1) -- (\depth,0) -- (0,0);
+            \draw[canvas is xz plane at y=1, fill=\fillcolor,rounded corners=0mm] (0,0) -- (0,1) -- (\depth,1) -- (\depth,0) -- (0,0);
+            \draw[canvas is yz plane at x=0, fill=\fillcolor,rounded corners=0mm] (0,0) -- (0,1) -- (1,1) -- (1,0) -- (0,0);
+            \draw[canvas is yz plane at x=0, step=\step, draw=black,rounded corners=0mm] (0,0)  grid (1,1);
+        \end{tikzpicture}    
+        }%
+
+\newcommand{\concatsone}{
+\begin{tikzpicture}
+    \node[inner sep=0] at (0,0){\mygridd{\featurescale}{.125}{.25}{activationcolor!70}};
+    \node[inner sep=0] at (-.25,0){\mygridd{\featurescale}{.125}{.25}{activationcolor}};
+\end{tikzpicture}
+}
+
+\newcommand{\concatstwo}{
+\begin{tikzpicture}
+    \node[inner sep=0] at (0,0){\mygridd{\featurescale}{.125}{.33}{activationcolor!70}};
+    \node[inner sep=0] at (-.25	,0){\mygridd{\featurescale}{.125}{.33}{activationcolor}};
+\end{tikzpicture}
+}
+
+\newcommand{\concatcontext}{
+\begin{tikzpicture}
+    \node[inner sep=0] at (0,0){\mygridd{\featurescale}{.5}{.25}{activationcolor}};
+    \node[inner sep=0] at (-.25,0){\mygridd{\featurescale}{.125}{.25}{contextonecolor}};
+    \node[inner sep=0] at (-.5,0){\mygridd{\featurescale}{.125}{.25}{contexttwocolor}};
+    \node[inner sep=0] at (-.75,0){\mygridd{\featurescale}{.125}{.25}{contextthreecolor}};
+    \node[inner sep=0] at (-1,0){\mygridd{\featurescale}{.125}{.25}{contextfourcolor}};
+\end{tikzpicture}
+}
+
+\newcommand{\contextfeaturemaps}{
+\begin{tikzpicture}[xshift=1]
+    \node[inner sep=0] at (-.25,0){\mygridd{\featurescale}{.125}{.25}{contextonecolor}};
+	\node[inner sep=0] at (-.5,0){\mygridd{\featurescale}{.125}{.25}{contexttwocolor}};
+	\node[inner sep=0] at (-.75,0){\mygridd{\featurescale}{.125}{.25}{contextthreecolor}};
+	\node[inner sep=0] at (-1,0){\mygridd{\featurescale}{.125}{.25}{contextfourcolor}};
+\end{tikzpicture}
+}
+
+\newcommand{\figpspmodule}{
+	\begin{tikzpicture}[node distance=.5em, xscale=\featurescale, yscale=-1.5]
+	
+	\coordinate (legend) at (0,4);
+	
+	\node[label={below:\scriptsize features}, inner sep=0](input) at (-1.3,1.5) {\mygridd{\featurescale}{.5}{.25}{activationcolor}};
+	\node[label={below:\scriptsize context}, inner sep=0](output) at (3.3,1.5) {\contextfeaturemaps};
+	
+	\coordinate[right=of input] (pool);
+	\coordinate[left=of output] (upsample);
+	
+	\node[inner sep=0](grid1) at (0.2,0){\mygridd{.5}{.5}{.5}{activationcolor!40}};
+	\node[inner sep=0](grid2) at (0.2,.8){\mygridd{.75}{.5}{.25}{activationcolor!60}};
+	\node[inner sep=0](grid3) at (0.2,1.8){\mygridd{1}{.5}{.25}{activationcolor!80}};
+	\node[inner sep=0](grid16) at (0.2,3){\mygridd{1.25}{.5}{.25}{activationcolor}};
+	
+	\coordinate[below right= 1em and 2em of grid16](convcoord);
+	
+	%\node(conv1) at (1,0) {conv};
+	%\node(conv2) at (1,.8) {conv};
+	%\node(conv3) at (1,1.8) {conv};
+	%\node(conv16) at (1,3) {conv};
+	
+	\node[inner sep=0](gridd1) at (1.8,0){\mygridd{.5}{.2}{.5}{contextonecolor}};
+	\node[inner sep=0](gridd2) at (1.8,.8){\mygridd{.75}{.2}{.25}{contexttwocolor}};
+	\node[inner sep=0](gridd3) at (1.8,1.8){\mygridd{1}{.2}{.25}{contextthreecolor}};
+	\node[inner sep=0](gridd16) at (1.8,3){\mygridd{1.25}{.2}{.25}{contextfourcolor}};
+	
+	\coordinate (center) at ($ (gridd1)!0.5!(grid1) $);
+	
+	\draw[conn] (input) -- (pool) |- (grid1);
+	\draw[conn] (input) -- (pool) |- (grid2);
+	\draw[conn] (input) -- (pool) |- (grid3);
+	\draw[conn] (input) -- (pool) |- (grid16);
+	
+	\draw[conn] (grid1) -- (gridd1);
+	\draw[conn] (grid2) -- (gridd2);
+	\draw[conn] (grid3) -- (gridd3);
+	\draw[conn] (grid16) -- (gridd16);
+	
+	\draw[revconn] (output) -- (upsample) |- (gridd1);
+	\draw[revconn] (output) -- (upsample) |- (gridd2);
+	\draw[revconn] (output) -- (upsample) |- (gridd3);
+	\draw[revconn] (output) -- (upsample) |- (gridd16);
+	
+	\node[anchor=mid](legpool) at (legend -| pool) {\scriptsize pooling};
+	\node[anchor=mid](legupsampl) at (legend -| upsample) {\scriptsize upsampl.};
+	\node[anchor=mid](legconv) at (legend -| center) {\scriptsize conv.};
+	
+	%\node[draw, rounded corners, label={[align=center]below:Pyramid Spatial Pooling (PSP) \\ Module}, fit=(input)(grid1)(gridd16)(output)(legpool)(legupsampl)(legconv)]{};
+
+	\end{tikzpicture}
+}
+
+\newcommand{\figFusionNetwork}{
+\def\imagewidth{4cm}
+	
+\begin{tikzpicture}[node distance=0.5em, yscale=4.5]
+
+    \def\labelimage{images/networkoutputbuildings}
+    
+    %% Sentinel-1
+    \node[inner sep=0, label={[anchor=south, rotate=90,label distance=0em]left:\scriptsize pre}] at (0,3.03) (s1pre) {\includegraphics[width=\imagewidth]{images/s1pre}};
+    \node[inner sep=0, label={[anchor=south, rotate=90,label distance=0em]left:\scriptsize post}] at (0,3.97) (s1post) {\includegraphics[width=\imagewidth]{images/s1post}};
+    %\node[anchor=east, rotate=0] at (-3,3.5) {\small Sentinel-1};
+
+    \coordinate (center) at ($ (s1pre.east)!0.5!(s1post.east) $);
+    \node[right=of center, inner sep=0, label={[anchor=center, label distance=1em]below right:\scriptsize 192px}] (minusone) {\concatsone};
+
+    \node[net,right=of minusone, fill=white] (resnet) {\small ResNet};
+    \node[right=of resnet, inner sep=0, label={[anchor=center, label distance=.4em]below:\scriptsize 96px}] (h0) {\mygridd{\featurescale}{.5}{.25}{activationcolor}};
+    \node[net, right=of h0, align=left, fill=white] (pspmodule) {\small PSP Module};
+    \node[right=of pspmodule, inner sep=0, label={[anchor=center, label distance=.4em]below:\scriptsize 96px}] (aggrout) {\concatcontext};
+    \node[right=of aggrout, inner sep=0] (s1label) {\includegraphics[width=\imagewidth]{\labelimage}};
+
+    \draw[conn] (s1pre.east)++(0,-.1em) -| (minusone);
+    \draw[conn] (s1post.east)++(0,.1em) -| (minusone);
+    \draw[conn] (minusone) -- (resnet);
+    \draw[conn] (resnet) -- (h0);
+    \draw[conn] (h0) -- (pspmodule);
+    \draw[conn] (pspmodule) -- (aggrout);
+    \draw[conn] (aggrout) -- (s1label);
+    \draw[conn] (h0) |- ++(1em,.5em) -| (aggrout);
+
+	
+    %% Sentinel-2
+    \node[inner sep=0, label={[label distance=0em, anchor=south, rotate=90]left:\scriptsize pre}] at (0,1.03) (s2pre) {\includegraphics[width=\imagewidth]{images/s2pre}};
+    \node[inner sep=0, label={[anchor=south, rotate=90,label distance=0em]left:\scriptsize post}] at (0,1.97) (s2post) {\includegraphics[width=\imagewidth]{images/s2post}};
+    %\node[anchor=east, rotate=0] at (-3,1.5) {\small Sentinel-2};
+
+    \coordinate (center) at ($ (s2pre.east)!0.5!(s2post.east) $);
+    \node[right=of center, inner sep=0, label={[anchor=center,label distance=1em]below right:\scriptsize 96px}] (minus) {\concatstwo};
+    \node[net,right=of minus, fill=white] (resnet) {\small ResNet};
+    \node[right=of resnet, inner sep=0, label={[anchor=center, label distance=.4em]below:\scriptsize 96px}] (h0) {\mygridd{\featurescale}{.5}{.25}{activationcolor}};
+    \node[net, right=of h0, align=left, fill=white] (pspmodule) {\small PSP Module};
+    \node[right=of pspmodule, inner sep=0, label={[anchor=center, label distance=.4em]below:\scriptsize 96px}] (aggrout) {\concatcontext};
+    \node[right=of aggrout, inner sep=0] (s2label) {\includegraphics[width=\imagewidth]{\labelimage}};
+
+    \draw[conn] (s2pre.east)++(0,-.1em) -| (minus);
+    \draw[conn] (s2post.east)++(0,.1em) -| (minus);
+    \draw[conn] (minus) -- (resnet);
+    \draw[conn] (resnet) -- (h0);
+    \draw[conn] (h0) -- (pspmodule);
+    \draw[conn] (pspmodule) -- (aggrout);
+    \draw[conn] (aggrout) -- (s2label);
+    \draw[conn] (h0) |- ++(1em,.5em) -| (aggrout);
+
+	
+    %% VHR
+    \node[inner sep=0, label={[anchor=south, rotate=90,label distance=0em]left:\scriptsize post}] (input) at (0,-.15) {\includegraphics[width=\imagewidth]{images/networkinput}};
+    \node[right=of input, inner sep=0, label={[anchor=center, label distance=.4em]below:\scriptsize 1560px}] (hm1) {\mygridd{\featurescale}{.125}{.125}{activationcolor}};
+    \node[net,right=of hm1, fill=white] (resnet) {\small ResNet};
+    \node[right=of resnet, inner sep=0, label={[anchor=center, label distance=.4em]below:\scriptsize 96px}] (h0) {\mygridd{\featurescale}{.5}{.25}{activationcolor}};
+    \node[net,right=of h0, align=left, fill=white] (pspnet) {\small PSP Module};
+    \node[right=of pspnet, inner sep=0, label={[anchor=center, label distance=.4em]below:\scriptsize 96px}] (aggrout) {\concatcontext};
+    \node[right=of aggrout, align=left, inner sep=0] (pspout) {\includegraphics[width=\imagewidth]{\labelimage}};
+    
+    \draw[conn] (input.east) -- (hm1);
+    \draw[conn] (hm1) -- (resnet);
+    \draw[conn] (resnet) -- (h0);
+    \draw[conn] (h0) -- (pspnet);
+    \draw[conn] (pspnet) -- (aggrout);
+    \draw[conn] (aggrout) -- (pspout);
+    \draw[conn] (h0) |- ++(1em,.4em) -| (aggrout);
+
+%    \node[anchor=east, rotate=0] at (-3,-.15) {\small very high res.};
+
+    \node[right=2em of s2label](out){\includegraphics[width=\imagewidth]{\labelimage}};
+    
+    \draw[conn] (s2label) -- (out);
+    \draw[conn] (s1label) -| ($ (s1label.east)!0.5!(out.west) $) |- (out.west);
+    \draw[conn] (pspout) -| ($ (pspout.east)!0.5!(out.west) $) |- (out.west);
+    
+    \begin{scope}[on background layer]
+    \node[fill=focusone!10, rounded corners, fit=(s1pre)(s1post)(s1label), label={[xshift=-1.5em, anchor=center, rotate=90]left:\small Sentinel 1}, inner sep=.2em]{};
+    \node[fill=focusone!10, rounded corners, fit=(s2pre)(s2post)(s2label), label={[xshift=-1.5em, anchor=center, rotate=90]left:\small Sentinel 2}, inner sep=.2em]{};
+    \node[fill=focusone!10, rounded corners, fit=(input)(pspout), label={[xshift=-1.5em, anchor=center, rotate=90]left:\small very high res.}, inner ysep=.5em, inner xsep=.2em]{};
+   	\end{scope}
+    
+    %% Annotations
+    
+    \node[noteannot, below=3cm of pspnet, xshift=1em, draw=none](annotpspnettext){\textbf{pyramid-sampling} \\ \textbf{pooling (PSP)} \\ module aggregates \\ contextual information \\ with multiple pooling \\ convolution, unpooling \\ steps};
+    \node[xshift=9em, yshift=0em, draw=none] at (annotpspnettext)(annotpspnetfigure){\figpspmodule};
+    \node[below=0em of annotpspnettext, xshift=5cm, text width=20cm, noteannot, draw=none](citepspnet){\verytiny\baselineskip=5pt Zhao, H., Shi, J., Qi, X., Wang, X., \& Jia, J. (2017). \textbf{Pyramid scene parsing network.} IEEE Conf. on CVPR.\par};
+    
+    \begin{scope}[on background layer]
+    \node[noteannot, fit=(annotpspnetfigure)(annotpspnettext)(citepspnet), rounded corners](annotpspnet){};
+    
+    \draw[annotation] (annotpspnet) -- (pspnet);
+    
+    \node[below=3cm of resnet, xshift=-3em, noteannot, text width=10cm](annotresnet){\textbf{residual network} \\ serves as encoder to \\ extract features \\ and harmonize \\ resolutions \\ \vspace{1em}
+    \verytiny\baselineskip=5pt Szegedy, C., Ioffe, S., Vanhoucke, V., \& Alemi, A. A. (2017). \textbf{Inception-v4, inception-resnet and the impact of residual connections on learning}. In AAAI (Vol. 4, p. 12).\par};
+    \draw[annotation] (annotresnet) -- (resnet);
+    
+    \node[noteannot, yshift=1em, right=2em of s1label](annotstreams){%
+    	\textbf{late fusion} \\
+    	of independent \\ 
+    	streams for each \\ 
+    	modality
+    };
+	\draw[annotation] (annotstreams) -- (s1label);
+    \draw[annotation] (annotstreams) -- (s2label);
+    %\draw[annotation] (annotstreams) -- (pspout); 
+    
+    \node[noteannot, xshift=2em, below=2em of out](annotout){%
+    	\textbf{prediction} of \\
+    	buildings \\ 
+    	or flooded build.
+    };
+	\draw[annotation] (annotout) -- (out); 
+	
+	\node[noteannot,above=2.5em of minusone, xshift=9em](annotprepost){%
+		\textbf{early fusion}
+		of pre-event
+		and post-
+		event images
+	};
+	\draw[annotation] (annotprepost.south)++(-6em,0) -- (minusone); 
+%	\draw[annotation] (annotprepost.south)++(-6em,0) -- (minus); 
+	
+	\end{scope}
+    
+    
+\end{tikzpicture}
+}

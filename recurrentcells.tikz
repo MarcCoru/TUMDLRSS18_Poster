@@ -1,0 +1,136 @@
+%\tikzsetnextfilename{lstm}
+
+\tikzstyle{operator} = [draw, circle, fill=tumbluemedium, draw=tumbluemedium, inner sep=0, text=white, font=\scriptsize]
+\tikzstyle{function} = [draw, rectangle, fill=tumbluemedium, draw=tumbluemedium, text=white]
+\tikzstyle{gate} = [fill=tumivory,draw,rounded corners=1pt, inner sep=2pt, minimum width=11mm, minimum height=11mm, font=\scriptsize]
+\tikzstyle{io} = [inner sep=2pt]
+
+\tikzstyle{dummy} = [inner sep=0]
+
+\colorlet{boxcolor}{tumgraydark}
+\tikzstyle{bigbox} = [rectangle, draw=tumivory, thick, fill=boxcolor, rounded corners, 
+inner xsep=0ex, inner ysep=2ex]
+
+\tikzset{pic shift/.store in=\shiftcoord,
+	pic shift={(0,0)},
+	lstmexplain/.pic = {
+		\begin{scope}[shift={\shiftcoord},xscale=6,yscale=4]
+			\node[dummy] (bl) at (0,0){}; % bottom left
+			\node[dummy] (tr) at (1,1){}; % top right
+			
+			\node[dummy] (br) at ($ (bl -| tr) $){}; % bottom right
+			\node[dummy] (tl) at ($ (bl |- tr) $){}; % top left
+			
+			\node[fit=(bl) (tr),bigbox] (-C) {};
+			
+			% input coordinate for rounded draw lines -> slightly right of tl
+			\coordinate (-input) at (0.1,1); % top left
+			
+			% output coordinate for rounded draw lines -> slightly left of br
+			\coordinate (-coutput) at (0.98,0); % bottom right
+			\coordinate (-houtput) at (0.98,1); % bottom right
+			
+%			% gate distance
+			\def\d{1/5}
+			
+			% gate heights
+			\def\h{1/3}
+			
+			\coordinate (f)  at bl+(0.35*\d,0);
+			\coordinate (i)  at bl+(1.6*\d,0);
+			\coordinate (j)  at bl+(2.7*\d,0);
+			\coordinate (o)  at bl+(3.6*\d,0);
+			\coordinate (out) at bl+(4.5*\d,0);
+			
+			\coordinate (gates) at (0,2*\h);
+			
+			\node[gate](fgate) at ($ (gates -| f) $){$\V{f}_t$};
+			\draw[endflow] (-input) -| (fgate);
+			
+			\node[gate](igate) at ($ (gates -| i) $){$\V{i}_t$};
+				
+			\node[gate](jgate) at ($ (gates -| j) $){$\V{j}_t$};
+			\node[operator](jmult) at ([shift={(-2pt,-1.1*\h)}]jgate) {$\odot$};
+			\draw[endflow] (-input) -| (jgate);
+			\draw[endflow] (jgate) -- (jmult);
+			\draw[endflow] (-input) -| (igate); 
+			\draw[endflow] (igate) |- (jmult);
+				
+			\node[gate](ogate) at ($ (gates -| o) $){$\V{o}_t$};
+			\draw[endflow] (tl) -| (ogate);
+			
+			% forget gate 
+			\coordinate (tmp) at (bl -| fgate);
+			\node[operator](fmult) at ([shift={(-2pt,0)}]tmp) {$\odot$};
+			\draw[endflow] (fgate) -- (fmult); 
+			\node[operator](cadd) at ([shift={(-2pt,0)}]$ (bl -| jgate) $) {$+$};
+			\draw[endflow] (jmult) -- (cadd); 
+			\draw[flow] (fmult) -- (cadd) -- (-coutput);		
+			
+			\node[operator](outtanh) at ($ (jmult -| out) $) {$\odot$};
+			\draw[endflow] (ogate) |- (outtanh);
+			\draw[flow] (outtanh) |- (-houtput);
+			\draw[endflow] (cadd) -| (outtanh);
+		\end{scope}
+	}
+}
+
+\tikzset{pic shift/.store in=\shiftcoord,
+	pic shift={(0,0)},
+	concat/.pic = {
+		\node[](a) at (0, .5){$\V{a}$};
+		\node[](b) at (0, -.5){$\V{b}$};
+		\node[](out) at (1, 0){$\concat{ \V{a} }{ \V{b} }$};
+		
+		\draw[endflow] (a) |- (out);
+		\draw[endflow] (b) |- (out);
+	}
+}
+
+\tikzset{pic shift/.store in=\shiftcoord,
+	pic shift={(0,0)},
+	copy/.pic = {
+		\node[](ain) at (0, 0){$\V{a}$};
+		\node[](aout1) at (.5, .5){$\V{a}$};
+		\node[](aout2) at (.5, -.5){$\V{a}$};
+		\draw[endflow] (ain) -| (aout1);
+		\draw[endflow] (ain) -| (aout2);
+	}
+}
+
+\tikzset{pic shift/.store in=\shiftcoord,
+	pic shift={(0,0)},
+	fgate/.pic = {
+		\begin{scope}[shift={\shiftcoord},xscale=1,yscale=1]
+			
+			\node[dummy] (tl_a) at (0,0){}; % bottom left
+			\node[dummy] (br_a) at (1,1){}; % top right
+			
+			\node[fit=(br_a) (tr_a),gate,inner sep=0] (-C) {};
+			
+			\node[draw] (conv) at (0.5,0){$conv$}; % bottom left
+			\node[draw] (bn) at (0.5,.5){$bn$}; % bottom left
+			\node[draw] (sigmoid) at (0.5,1){$\sigma$}; % bottom left
+				
+		\end{scope}
+	}
+}
+
+\newcommand{\figlstmexplain}{
+	\begin{tikzpicture}[scale=1, node distance=.5em]%,show background rectangle,background rectangle/.style={draw=red}]
+	
+	\draw pic (LSTM) at (0,0) {lstmexplain};
+	\node[io,xshift=1ex,above=of LSTMtl](xt){$\V{x}_{t}$};%$x_{t}$
+	\node[io,left=of LSTMtl](htminus1){$\V{h}_{t-1}$};
+	\node[io,right=of LSTMbr](ct){$\V{c}_{t}$}; % $c_{t}$
+	\node[io,left=of LSTMbl](ctminus1){$\V{c}_{t-1}$}; % 
+	\node[io,right=of LSTMtr](ht){$\V{h}_{t}$};
+	
+	%% iterative connections
+	\draw[flow, rounded corners] (xt) |- (LSTM-input);
+	\draw[endflow] (htminus1) -- (LSTM-input);
+	\draw[endflow] (LSTM-coutput)--(ct);
+	\draw[endflow] (ctminus1)--(LSTMfmult);
+	\draw[endflow] (LSTM-houtput)--(ht);
+	\end{tikzpicture}
+}

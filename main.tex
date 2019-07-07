@@ -1,0 +1,184 @@
+\documentclass[a0]{tumposter}
+
+\usepackage[english]{babel}
+
+\usepackage{blindtext}
+
+\usepackage{xcolor} 
+\usepackage{multicol}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{tabularx}
+
+\usepackage[utf8]{inputenc}
+\usepackage{booktabs}
+\usepackage{natbib}
+\usepackage{tikz}
+\usetikzlibrary{arrows, positioning, 3d, calc, fit}
+\usetikzlibrary{spy}
+\usetikzlibrary{backgrounds}
+\usetikzlibrary{matrix}
+
+\usepackage{pgfplots}
+\usepgfplotslibrary{groupplots}
+\usepackage{pgfplotstable}
+\usepgfplotslibrary{dateplot}
+
+\newcommand{\pre}[1]{
+	{\color{focusone}\textbf{#1}}
+}
+\newcommand{\post}[1]{
+	{\color{focustwo}\textbf{#1}}
+}
+
+
+% for printing fontsizes
+\usepackage{printlen}
+\uselengthunit{mm}
+
+\input{networks.tikz}
+\input{aaaifigures.tikz}
+\input{recurrentcells.tikz}
+\usepackage[utf8]{inputenc}
+
+\pgfplotsset{every tick label/.append style={font=\tiny}}
+
+
+\title{
+	Incorporating Time%\\% 
+	%{\Large \color{tumblue}  Multi-\{temporal, modal, resolution\} Data Fusion and Recurrent Nets}
+	}
+	
+\author{
+	Marc Rußwurm, supervised by Marco Körner
+	}
+
+\header{
+	Remote Sensing Technology \\
+	TUM Department of Civil, Geo and Environmental Engineering \\
+	Technical University of Munich
+	}
+	
+\begin{document}
+\maketitle
+
+\vspace{-1.2em}
+\section{Pre- and Post-event Satellite Images for Flooded Building Identification}
+\begin{minipage}{0.35\linewidth} 
+Detection of affected areas after disaster events, such as \textbf{earthquakes}, \textbf{floods}, or \textbf{hurricanes}.
+\subsection{Method}
+Fusion of
+\begin{itemize}%
+\item medium resolution radar (Sentinel 1)
+\item medium resolution optical (Sentinel 2)
+\item very high resolution optical (VHR)
+\end{itemize}
+satellite images \pre{pre-} and \post{post-event} with a \textbf{multi-stream neural network}
+
+\subsection{Results}
+
+Building footprint segmentation in Houston, Texas, with different modalities.
+
+\vspace{.5em}
+\small
+\begin{tabularx}{\linewidth}{X c c c} 
+	\toprule
+	\textbf{Modality (Satellite)} & \textbf{mIoU} & \textbf{bIoU} & \textbf{Accuracy} \\
+	\cmidrule(lr){1-1}
+	\cmidrule(lr){2-2}
+	\cmidrule(lr){3-3}
+	\cmidrule(lr){4-4}
+	S1 & 69.3\% & 63.7\% & 82.6\% \\
+	S2 & 73.1\% & 66.7\% & 85.4\% \\
+	VHR & 78.9\% & 74.3\% & 88.8\% \\
+	S1 + S2 & 76.1\% &  70.5\% & 87.3\% \\
+	S1 + S2 + VHR & \bfseries 79.9\% & \bfseries 75.2\% & \bfseries89.5\% \\
+	\bottomrule
+\end{tabularx}
+
+\vspace{.5em}
+The Team:
+\vspace{.25em}
+
+\begin{tikzpicture}
+\node[inner sep=0](banner){\includegraphics[height=3.5cm]{images/fdl_EO_banner}};
+\node[right=.2em of banner, inner sep=0](team){\includegraphics[height=3.5cm]{images/TheTeam}};
+\node[right=.2em of team, inner sep=0](mentors){\includegraphics[height=3.5cm]{images/mentors}};
+\end{tikzpicture}
+\end{minipage}
+\hspace{2em}
+\begin{minipage}{0.6\linewidth}
+%	\vspace{-1em}
+	\figFusionNetwork
+
+\end{minipage}
+
+%\vspace{1em}
+\section{Dense Time series for Vegetation Monitoring with Recurrent Networks}
+
+\input{activations.tikz}
+\newcounter{tcounter}
+\input{seqencnetwork.tikz}
+
+\begin{minipage}{0.35\linewidth} 
+\textbf{Recurrent Neural Networks} \\ learn patterns in sequential data.
+
+\vspace{-.5em}
+\subsection{Application}
+We insert a \pre{sequence of satellite images} to learn \textbf{vegetation life cycle} events for field crop identification.
+
+\subsection{Automatic Cloud Filtering}
+Area of interest covered by clouds.
+\input{scl.tikz}
+
+%\vspace{.2em}
+We \textbf{trained} the network on \textbf{cloudy} and \textbf{non-cloudy} datasets.
+\input{clouds.tikz}
+Similar accuracy on data with clouds, due to some cells having learned cloud masking from provided data.
+	
+\end{minipage}
+\hspace{2em}
+\begin{minipage}{0.6\linewidth}
+%	\vspace{-2em}
+	\figseqencnetwork
+\end{minipage}
+
+
+%\input{examples.tex}
+
+
+
+
+% footer environment places \hfill and sets fontsize
+\begin{footer}
+	\begin{multicols}{2}
+		\textbf{Technical University of Munich}\\
+		TUM Department of Civil, Geo and Environmental Engineering \\
+		Chair of Remote Sensing Technology, Computer Vision Research Group \\
+		Arcisstr. 21, 80333 Munich, Germany \\
+		www.lmf.bgu.tum.de/vision
+		\vfill\columnbreak
+		%right
+		\begin{multicols}{2}
+			\textbf{Authors} \\
+			Marc Rußwurm \\ (marc.russwurm@tum.de) \\
+			supervised by Marco Körner \\ (marco.koerner@tum.de)
+			\vfill
+			\columnbreak
+			\textbf{Code \& Data} \\
+			github.com/TUM-LMF/MTLCC \\
+			github.com/TUM-LMF/MTLCC-pytorch \\
+			\\
+			twitter.com/MarcCoru
+			\vfill
+%			https://github.com/TUM-LMF/MTLCC
+%			\hfill\includegraphics[height=5.5cm]{images/qrcode.png}
+			\fancywhitespace		
+		\end{multicols}
+		
+		
+	\end{multicols}
+\end{footer}
+
+
+\end{document}
